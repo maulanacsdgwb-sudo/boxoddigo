@@ -1,1 +1,1018 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
 
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <meta
+        name="description"
+        content="ODDIGO Mystery Box - Buka box dan dapatkan hadiah saldo atau smartphone"
+    >
+
+    <title>ODDIGO Mystery Box</title>
+
+    <link
+        rel="preconnect"
+        href="https://fonts.googleapis.com"
+    >
+
+    <link
+        rel="preconnect"
+        href="https://fonts.gstatic.com"
+        crossorigin
+    >
+
+    <link
+        href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;600;700;800&family=Rajdhani:wght@400;500;600;700&display=swap"
+        rel="stylesheet"
+    >
+
+    <link
+        rel="stylesheet"
+        href="css/mystery.css"
+    >
+
+    <link
+        rel="stylesheet"
+        href="css/responsive.css"
+    >
+</head>
+
+<body>
+
+    <!-- Background Effects -->
+    <div
+        class="background-effects"
+        aria-hidden="true"
+    >
+        <div class="background-grid"></div>
+
+        <div
+            class="glow-circle glow-circle-one"
+        ></div>
+
+        <div
+            class="glow-circle glow-circle-two"
+        ></div>
+
+        <div
+            class="glow-circle glow-circle-three"
+        ></div>
+
+        <span class="particle particle-one"></span>
+        <span class="particle particle-two"></span>
+        <span class="particle particle-three"></span>
+        <span class="particle particle-four"></span>
+        <span class="particle particle-five"></span>
+        <span class="particle particle-six"></span>
+    </div>
+
+
+    <!-- Main Page -->
+    <main class="mystery-page">
+
+        <!-- Header -->
+        <header class="mystery-header">
+
+            <div class="brand-area">
+
+                <div class="brand-logo">
+
+                    <img
+                        src="assets/logo/oddigo.webp"
+                        alt="Logo ODDIGO"
+                        onerror="this.style.display='none'; this.parentElement.classList.add('logo-fallback');"
+                    >
+
+                    <span class="fallback-text">
+                        O
+                    </span>
+
+                </div>
+
+                <div class="brand-text">
+
+                    <p>
+                        PREMIUM REWARD SYSTEM
+                    </p>
+
+                    <h1>
+                        ODDIGO
+                    </h1>
+
+                    <span>
+                        MYSTERY BOX
+                    </span>
+
+                </div>
+
+            </div>
+
+
+            <div class="header-status">
+
+                <span class="status-dot"></span>
+
+                <div>
+
+                    <strong>
+                        SYSTEM ONLINE
+                    </strong>
+
+                    <span>
+                        Hadiah siap dibuka
+                    </span>
+
+                </div>
+
+            </div>
+
+        </header>
+
+
+        <!-- Page Heading -->
+        <section class="hero-heading">
+
+            <p class="section-label">
+                OPEN YOUR REWARD
+            </p>
+
+            <h2 id="customerPageHeading">
+                PILIH MYSTERY BOX
+            </h2>
+
+            <p id="customerPageDescription">
+                Masukkan username dan kode bonus, lalu pilih satu dari enam box misterius.
+            </p>
+
+        </section>
+
+
+        <!-- Main Content -->
+        <div class="mystery-container">
+
+
+            <!-- =========================================
+                 CUSTOMER VERIFICATION PANEL
+            ========================================== -->
+
+            <aside class="customer-panel">
+
+                <div class="panel-heading">
+
+                    <p class="section-label">
+                        VERIFICATION
+                    </p>
+
+                    <h2>
+                        Aktifkan Kode
+                    </h2>
+
+                    <p>
+                        Masukkan username dan kode Mystery Box
+                        yang diberikan oleh admin.
+                    </p>
+
+                </div>
+
+
+                <!-- Verification Form -->
+                <form
+                    id="verificationForm"
+                    class="verification-form"
+                    novalidate
+                >
+
+                    <!-- Username -->
+                    <div class="form-group">
+
+                        <label for="mysteryUsername">
+                            Username
+                        </label>
+
+                        <div class="input-wrapper">
+
+                            <span
+                                class="input-icon"
+                                aria-hidden="true"
+                            >
+                                👤
+                            </span>
+
+                            <input
+                                type="text"
+                                id="mysteryUsername"
+                                name="mysteryUsername"
+                                placeholder="Masukkan username"
+                                autocomplete="off"
+                                minlength="3"
+                                required
+                            >
+
+                        </div>
+
+                        <small
+                            id="mysteryUsernameError"
+                            class="field-error"
+                            aria-live="polite"
+                        ></small>
+
+                    </div>
+
+
+                    <!-- Bonus Code -->
+                    <div class="form-group">
+
+                        <label for="mysteryCode">
+                            Kode Mystery Box
+                        </label>
+
+                        <div class="input-wrapper">
+
+                            <span
+                                class="input-icon"
+                                aria-hidden="true"
+                            >
+                                🔑
+                            </span>
+
+                            <input
+                                type="text"
+                                id="mysteryCode"
+                                name="mysteryCode"
+                                placeholder="Contoh: BOX-AB12CD"
+                                autocomplete="off"
+                                maxlength="24"
+                                required
+                            >
+
+                        </div>
+
+                        <small
+                            id="mysteryCodeError"
+                            class="field-error"
+                            aria-live="polite"
+                        ></small>
+
+                    </div>
+
+
+                    <!-- Verify Button -->
+                    <button
+                        type="submit"
+                        id="verifyButton"
+                        class="verify-button"
+                    >
+
+                        <span class="button-text">
+                            VERIFIKASI KODE
+                        </span>
+
+                        <span
+                            id="verifyLoader"
+                            class="button-loader hidden"
+                            aria-hidden="true"
+                        ></span>
+
+                    </button>
+
+                </form>
+
+
+                <!-- Verified Code Information -->
+                <section
+                    id="codeInformation"
+                    class="code-information hidden"
+                >
+
+                    <div class="information-heading">
+
+                        <div>
+
+                            <p class="section-label">
+                                ACTIVE CODE
+                            </p>
+
+                            <h3>
+                                Kode Berhasil Aktif
+                            </h3>
+
+                        </div>
+
+                        <span class="verified-badge">
+                            VERIFIED
+                        </span>
+
+                    </div>
+
+
+                    <div class="information-list">
+
+                        <div class="information-item">
+
+                            <span>
+                                Username
+                            </span>
+
+                            <strong id="verifiedUsername">
+                                -
+                            </strong>
+
+                        </div>
+
+
+                        <div class="information-item">
+
+                            <span>
+                                Kode
+                            </span>
+
+                            <strong id="verifiedCode">
+                                -
+                            </strong>
+
+                        </div>
+
+
+                        <div class="information-item">
+
+                            <span>
+                                Hadiah
+                            </span>
+
+                            <strong id="verifiedReward">
+                                RAHASIA
+                            </strong>
+
+                        </div>
+
+
+                        <div class="information-item">
+
+                            <span>
+                                Sisa Buka
+                            </span>
+
+                            <strong id="remainingOpenText">
+                                0
+                            </strong>
+
+                        </div>
+
+
+                        <div class="information-item">
+
+                            <span>
+                                Kedaluwarsa
+                            </span>
+
+                            <strong id="verifiedExpired">
+                                -
+                            </strong>
+
+                        </div>
+
+                    </div>
+
+
+                    <button
+                        type="button"
+                        id="changeCodeButton"
+                        class="change-code-button"
+                    >
+                        Gunakan Kode Lain
+                    </button>
+
+                </section>
+
+
+                <!-- Notice Card -->
+                <div class="notice-card">
+
+                    <div class="notice-icon">
+                        💡
+                    </div>
+
+                    <div>
+
+                        <h3>
+                            Cara Bermain
+                        </h3>
+
+                        <p>
+                            Setelah kode berhasil diverifikasi,
+                            pilih satu box. Box yang dipilih akan
+                            terbuka dan menampilkan hadiahmu.
+                        </p>
+
+                    </div>
+
+                </div>
+
+            </aside>
+
+
+            <!-- =========================================
+                 MYSTERY BOX PANEL
+            ========================================== -->
+
+            <section class="box-panel">
+
+                <div class="box-panel-heading">
+
+                    <div>
+
+                        <p class="section-label">
+                            SIX MYSTERY BOXES
+                        </p>
+
+                        <h2>
+                            Pilih Box Keberuntunganmu
+                        </h2>
+
+                        <p id="boxInstruction">
+                            Verifikasi kode terlebih dahulu untuk membuka pilihan box.
+                        </p>
+
+                    </div>
+
+
+                    <div class="remaining-counter">
+
+                        <span>
+                            Sisa Buka
+                        </span>
+
+                        <strong id="openCounter">
+                            0
+                        </strong>
+
+                    </div>
+
+                </div>
+
+
+                <!-- Box Stage -->
+                <div
+                    id="boxStage"
+                    class="box-stage"
+                >
+
+                    <!-- Lock Overlay -->
+                    <div
+                        id="boxLockOverlay"
+                        class="box-lock-overlay"
+                    >
+
+                        <div class="box-lock-content">
+
+                            <div class="lock-icon">
+                                🔒
+                            </div>
+
+                            <h3>
+                                Mystery Box Terkunci
+                            </h3>
+
+                            <p>
+                                Masukkan username dan kode valid
+                                untuk membuka enam pilihan box.
+                            </p>
+
+                        </div>
+
+                    </div>
+
+
+                    <!-- 6 Mystery Boxes -->
+                    <div
+                        id="mysteryBoxGrid"
+                        class="mystery-box-grid"
+                    >
+
+                        <!-- Box 1 -->
+                        <button
+                            type="button"
+                            class="mystery-box"
+                            data-box-index="0"
+                            aria-label="Pilih Mystery Box 1"
+                            disabled
+                        >
+
+                            <span class="box-number">
+                                BOX 01
+                            </span>
+
+                            <span class="box-glow"></span>
+
+                            <span class="box-shadow"></span>
+
+                            <span class="box-object">
+
+                                <span class="box-lid">
+
+                                    <span class="box-ribbon-horizontal"></span>
+
+                                    <span class="box-bow">
+                                        🎀
+                                    </span>
+
+                                </span>
+
+                                <span class="box-body">
+
+                                    <span class="box-ribbon-vertical"></span>
+
+                                    <span class="box-question">
+                                        ?
+                                    </span>
+
+                                </span>
+
+                                <span class="box-prize">
+                                    🎁
+                                </span>
+
+                            </span>
+
+                            <span class="box-select-label">
+                                PILIH BOX
+                            </span>
+
+                        </button>
+
+
+                        <!-- Box 2 -->
+                        <button
+                            type="button"
+                            class="mystery-box"
+                            data-box-index="1"
+                            aria-label="Pilih Mystery Box 2"
+                            disabled
+                        >
+
+                            <span class="box-number">
+                                BOX 02
+                            </span>
+
+                            <span class="box-glow"></span>
+
+                            <span class="box-shadow"></span>
+
+                            <span class="box-object">
+
+                                <span class="box-lid">
+
+                                    <span class="box-ribbon-horizontal"></span>
+
+                                    <span class="box-bow">
+                                        🎀
+                                    </span>
+
+                                </span>
+
+                                <span class="box-body">
+
+                                    <span class="box-ribbon-vertical"></span>
+
+                                    <span class="box-question">
+                                        ?
+                                    </span>
+
+                                </span>
+
+                                <span class="box-prize">
+                                    🎁
+                                </span>
+
+                            </span>
+
+                            <span class="box-select-label">
+                                PILIH BOX
+                            </span>
+
+                        </button>
+
+
+                        <!-- Box 3 -->
+                        <button
+                            type="button"
+                            class="mystery-box"
+                            data-box-index="2"
+                            aria-label="Pilih Mystery Box 3"
+                            disabled
+                        >
+
+                            <span class="box-number">
+                                BOX 03
+                            </span>
+
+                            <span class="box-glow"></span>
+
+                            <span class="box-shadow"></span>
+
+                            <span class="box-object">
+
+                                <span class="box-lid">
+
+                                    <span class="box-ribbon-horizontal"></span>
+
+                                    <span class="box-bow">
+                                        🎀
+                                    </span>
+
+                                </span>
+
+                                <span class="box-body">
+
+                                    <span class="box-ribbon-vertical"></span>
+
+                                    <span class="box-question">
+                                        ?
+                                    </span>
+
+                                </span>
+
+                                <span class="box-prize">
+                                    🎁
+                                </span>
+
+                            </span>
+
+                            <span class="box-select-label">
+                                PILIH BOX
+                            </span>
+
+                        </button>
+
+
+                        <!-- Box 4 -->
+                        <button
+                            type="button"
+                            class="mystery-box"
+                            data-box-index="3"
+                            aria-label="Pilih Mystery Box 4"
+                            disabled
+                        >
+
+                            <span class="box-number">
+                                BOX 04
+                            </span>
+
+                            <span class="box-glow"></span>
+
+                            <span class="box-shadow"></span>
+
+                            <span class="box-object">
+
+                                <span class="box-lid">
+
+                                    <span class="box-ribbon-horizontal"></span>
+
+                                    <span class="box-bow">
+                                        🎀
+                                    </span>
+
+                                </span>
+
+                                <span class="box-body">
+
+                                    <span class="box-ribbon-vertical"></span>
+
+                                    <span class="box-question">
+                                        ?
+                                    </span>
+
+                                </span>
+
+                                <span class="box-prize">
+                                    🎁
+                                </span>
+
+                            </span>
+
+                            <span class="box-select-label">
+                                PILIH BOX
+                            </span>
+
+                        </button>
+
+
+                        <!-- Box 5 -->
+                        <button
+                            type="button"
+                            class="mystery-box"
+                            data-box-index="4"
+                            aria-label="Pilih Mystery Box 5"
+                            disabled
+                        >
+
+                            <span class="box-number">
+                                BOX 05
+                            </span>
+
+                            <span class="box-glow"></span>
+
+                            <span class="box-shadow"></span>
+
+                            <span class="box-object">
+
+                                <span class="box-lid">
+
+                                    <span class="box-ribbon-horizontal"></span>
+
+                                    <span class="box-bow">
+                                        🎀
+                                    </span>
+
+                                </span>
+
+                                <span class="box-body">
+
+                                    <span class="box-ribbon-vertical"></span>
+
+                                    <span class="box-question">
+                                        ?
+                                    </span>
+
+                                </span>
+
+                                <span class="box-prize">
+                                    🎁
+                                </span>
+
+                            </span>
+
+                            <span class="box-select-label">
+                                PILIH BOX
+                            </span>
+
+                        </button>
+
+
+                        <!-- Box 6 -->
+                        <button
+                            type="button"
+                            class="mystery-box"
+                            data-box-index="5"
+                            aria-label="Pilih Mystery Box 6"
+                            disabled
+                        >
+
+                            <span class="box-number">
+                                BOX 06
+                            </span>
+
+                            <span class="box-glow"></span>
+
+                            <span class="box-shadow"></span>
+
+                            <span class="box-object">
+
+                                <span class="box-lid">
+
+                                    <span class="box-ribbon-horizontal"></span>
+
+                                    <span class="box-bow">
+                                        🎀
+                                    </span>
+
+                                </span>
+
+                                <span class="box-body">
+
+                                    <span class="box-ribbon-vertical"></span>
+
+                                    <span class="box-question">
+                                        ?
+                                    </span>
+
+                                </span>
+
+                                <span class="box-prize">
+                                    🎁
+                                </span>
+
+                            </span>
+
+                            <span class="box-select-label">
+                                PILIH BOX
+                            </span>
+
+                        </button>
+
+                    </div>
+
+                </div>
+
+
+                <!-- Box Message -->
+                <div
+                    id="boxMessage"
+                    class="box-message"
+                    aria-live="polite"
+                >
+                    Pilih satu box setelah kode berhasil diverifikasi.
+                </div>
+
+            </section>
+
+        </div>
+
+    </main>
+
+
+    <!-- =========================================
+         RESULT MODAL
+    ========================================== -->
+
+    <div
+        id="resultModal"
+        class="result-modal hidden"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="resultTitle"
+    >
+
+        <div class="modal-backdrop"></div>
+
+
+        <div class="result-modal-card">
+
+            <div
+                class="modal-decoration modal-decoration-one"
+                aria-hidden="true"
+            ></div>
+
+            <div
+                class="modal-decoration modal-decoration-two"
+                aria-hidden="true"
+            ></div>
+
+
+            <button
+                type="button"
+                id="modalCloseButton"
+                class="modal-close-button"
+                aria-label="Tutup hasil"
+            >
+                ×
+            </button>
+
+
+            <div
+                id="resultIcon"
+                class="result-icon"
+            >
+                🎁
+            </div>
+
+
+            <p class="section-label">
+                MYSTERY BOX RESULT
+            </p>
+
+
+            <h2 id="resultTitle">
+                Selamat!
+            </h2>
+
+
+            <p class="result-subtitle">
+                Hadiah Mystery Box kamu adalah:
+            </p>
+
+
+            <div class="result-prize">
+
+                <span id="resultPrizeIcon">
+                    🎁
+                </span>
+
+                <strong id="resultPrize">
+                    -
+                </strong>
+
+            </div>
+
+
+            <div class="modal-information">
+
+                <div>
+
+                    <span>
+                        Username
+                    </span>
+
+                    <strong id="modalUsername">
+                        -
+                    </strong>
+
+                </div>
+
+
+                <div>
+
+                    <span>
+                        Box Terpilih
+                    </span>
+
+                    <strong id="modalSelectedBox">
+                        -
+                    </strong>
+
+                </div>
+
+
+                <div>
+
+                    <span>
+                        Sisa Kesempatan
+                    </span>
+
+                    <strong id="modalRemainingOpen">
+                        0
+                    </strong>
+
+                </div>
+
+
+                <div>
+
+                    <span>
+                        Status
+                    </span>
+
+                    <strong id="modalRewardStatus">
+                        BERHASIL
+                    </strong>
+
+                </div>
+
+            </div>
+
+
+            <button
+                type="button"
+                id="modalActionButton"
+                class="modal-action-button"
+            >
+                TUTUP
+            </button>
+
+        </div>
+
+    </div>
+
+
+    <!-- Toast -->
+    <div
+        id="mysteryToast"
+        class="toast"
+        role="status"
+        aria-live="polite"
+    ></div>
+
+
+    <!-- Confetti -->
+    <div
+        id="confettiContainer"
+        class="confetti-container"
+        aria-hidden="true"
+    ></div>
+
+
+    <!-- Audio -->
+    <audio
+        id="boxOpenAudio"
+        preload="auto"
+    >
+        <source
+            src="assets/audio/box-open.mp3"
+            type="audio/mpeg"
+        >
+    </audio>
+
+
+    <audio
+        id="winAudio"
+        preload="auto"
+    >
+        <source
+            src="assets/audio/win.mp3"
+            type="audio/mpeg"
+        >
+    </audio>
+
+
+    <!-- Scripts -->
+    <script src="js/storage.js"></script>
+    <script src="js/box-animation.js"></script>
+    <script src="js/mystery.js"></script>
+
+</body>
+</html>
