@@ -1,1 +1,1710 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
 
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <meta
+        name="description"
+        content="ODDIGO Mystery Box Admin Dashboard"
+    >
+
+    <title>ODDIGO Mystery Box - Admin Dashboard</title>
+
+    <link
+        rel="preconnect"
+        href="https://fonts.googleapis.com"
+    >
+
+    <link
+        rel="preconnect"
+        href="https://fonts.gstatic.com"
+        crossorigin
+    >
+
+    <link
+        href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;600;700;800&family=Rajdhani:wght@400;500;600;700&display=swap"
+        rel="stylesheet"
+    >
+
+    <link
+        rel="stylesheet"
+        href="css/admin.css"
+    >
+
+    <link
+        rel="stylesheet"
+        href="css/responsive.css"
+    >
+</head>
+
+<body>
+
+    <!-- Background -->
+    <div
+        class="background-effects"
+        aria-hidden="true"
+    >
+        <div class="background-grid"></div>
+
+        <div
+            class="glow-circle glow-circle-one"
+        ></div>
+
+        <div
+            class="glow-circle glow-circle-two"
+        ></div>
+    </div>
+
+
+    <!-- Mobile Overlay -->
+    <div
+        id="sidebarOverlay"
+        class="sidebar-overlay"
+    ></div>
+
+
+    <!-- Sidebar -->
+    <aside
+        id="sidebar"
+        class="sidebar"
+    >
+
+        <!-- Brand -->
+        <div class="sidebar-brand">
+
+            <div class="sidebar-logo">
+
+                <img
+                    src="assets/logo/oddigo.webp"
+                    alt="Logo ODDIGO"
+                    onerror="this.style.display='none'; this.parentElement.classList.add('logo-fallback');"
+                >
+
+                <span class="fallback-text">
+                    O
+                </span>
+
+            </div>
+
+            <div class="sidebar-brand-text">
+
+                <strong>
+                    ODDIGO
+                </strong>
+
+                <span>
+                    MYSTERY BOX
+                </span>
+
+            </div>
+
+        </div>
+
+
+        <!-- Navigation -->
+        <nav
+            class="sidebar-navigation"
+            aria-label="Navigasi Admin"
+        >
+
+            <button
+                type="button"
+                class="navigation-item active"
+                data-section="dashboardSection"
+            >
+                <span class="navigation-icon">
+                    📊
+                </span>
+
+                <span>
+                    Dashboard
+                </span>
+            </button>
+
+
+            <button
+                type="button"
+                class="navigation-item"
+                data-section="generateSection"
+            >
+                <span class="navigation-icon">
+                    🎟️
+                </span>
+
+                <span>
+                    Generate Kode
+                </span>
+            </button>
+
+
+            <button
+                type="button"
+                class="navigation-item"
+                data-section="historySection"
+            >
+                <span class="navigation-icon">
+                    📜
+                </span>
+
+                <span>
+                    Riwayat Kode
+                </span>
+            </button>
+
+
+            <button
+                type="button"
+                class="navigation-item"
+                data-section="rewardSection"
+            >
+                <span class="navigation-icon">
+                    🎁
+                </span>
+
+                <span>
+                    Hadiah
+                </span>
+            </button>
+
+
+            <button
+                type="button"
+                class="navigation-item"
+                data-section="settingsSection"
+            >
+                <span class="navigation-icon">
+                    ⚙️
+                </span>
+
+                <span>
+                    Pengaturan
+                </span>
+            </button>
+
+        </nav>
+
+
+        <!-- Customer Page -->
+        <div class="sidebar-customer-link">
+
+            <a
+                href="mystery.html"
+                target="_blank"
+                rel="noopener noreferrer"
+            >
+                <span>
+                    📦
+                </span>
+
+                Buka Halaman Mystery Box
+            </a>
+
+        </div>
+
+
+        <!-- Admin Profile -->
+        <div class="admin-profile">
+
+            <div class="admin-avatar">
+                A
+            </div>
+
+            <div class="admin-information">
+
+                <strong>
+                    Administrator
+                </strong>
+
+                <span>
+                    Online
+                </span>
+
+            </div>
+
+            <button
+                type="button"
+                id="logoutButton"
+                class="logout-button"
+                title="Logout"
+                aria-label="Logout"
+            >
+                🚪
+            </button>
+
+        </div>
+
+    </aside>
+
+
+    <!-- Main Content -->
+    <main class="main-content">
+
+        <!-- Topbar -->
+        <header class="topbar">
+
+            <div class="topbar-left">
+
+                <button
+                    type="button"
+                    id="sidebarToggle"
+                    class="sidebar-toggle"
+                    aria-label="Buka menu"
+                >
+                    ☰
+                </button>
+
+                <div>
+
+                    <p class="section-label">
+                        ADMIN CONTROL CENTER
+                    </p>
+
+                    <h1 id="pageTitle">
+                        Dashboard
+                    </h1>
+
+                </div>
+
+            </div>
+
+
+            <div class="topbar-right">
+
+                <div class="system-status">
+
+                    <span class="status-dot"></span>
+
+                    <div>
+
+                        <strong>
+                            System Online
+                        </strong>
+
+                        <span id="currentDate">
+                            -
+                        </span>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </header>
+
+
+        <!-- Content Wrapper -->
+        <div class="content-wrapper">
+
+
+            <!-- =========================================
+                 DASHBOARD SECTION
+            ========================================== -->
+
+            <section
+                id="dashboardSection"
+                class="admin-section active-section"
+            >
+
+                <!-- Welcome Banner -->
+                <div class="welcome-banner">
+
+                    <div class="welcome-content">
+
+                        <p class="section-label">
+                            WELCOME BACK
+                        </p>
+
+                        <h2>
+                            Kelola ODDIGO Mystery Box
+                        </h2>
+
+                        <p>
+                            Buat kode hadiah, tentukan hadiah saldo atau HP,
+                            lalu bagikan kode kepada customer.
+                        </p>
+
+                        <button
+                            type="button"
+                            id="quickGenerateButton"
+                            class="primary-button"
+                        >
+                            <span>
+                                🎟️
+                            </span>
+
+                            Generate Kode Baru
+                        </button>
+
+                    </div>
+
+
+                    <div
+                        class="welcome-visual"
+                        aria-hidden="true"
+                    >
+
+                        <div class="mystery-box-visual">
+
+                            <div class="box-glow"></div>
+
+                            <div class="box-lid">
+                                🎀
+                            </div>
+
+                            <div class="box-body">
+                                ?
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+                <!-- Statistics -->
+                <div class="statistics-grid">
+
+                    <article class="statistic-card">
+
+                        <div class="statistic-icon">
+                            🎟️
+                        </div>
+
+                        <div class="statistic-information">
+
+                            <span>
+                                Total Kode
+                            </span>
+
+                            <strong id="totalCodes">
+                                0
+                            </strong>
+
+                            <small>
+                                Semua kode yang dibuat
+                            </small>
+
+                        </div>
+
+                    </article>
+
+
+                    <article class="statistic-card">
+
+                        <div class="statistic-icon active-icon">
+                            ✅
+                        </div>
+
+                        <div class="statistic-information">
+
+                            <span>
+                                Kode Aktif
+                            </span>
+
+                            <strong id="activeCodes">
+                                0
+                            </strong>
+
+                            <small>
+                                Siap digunakan customer
+                            </small>
+
+                        </div>
+
+                    </article>
+
+
+                    <article class="statistic-card">
+
+                        <div class="statistic-icon used-icon">
+                            📦
+                        </div>
+
+                        <div class="statistic-information">
+
+                            <span>
+                                Sudah Dibuka
+                            </span>
+
+                            <strong id="usedCodes">
+                                0
+                            </strong>
+
+                            <small>
+                                Hadiah sudah diklaim
+                            </small>
+
+                        </div>
+
+                    </article>
+
+
+                    <article class="statistic-card">
+
+                        <div class="statistic-icon expired-icon">
+                            ⏰
+                        </div>
+
+                        <div class="statistic-information">
+
+                            <span>
+                                Kedaluwarsa
+                            </span>
+
+                            <strong id="expiredCodes">
+                                0
+                            </strong>
+
+                            <small>
+                                Kode tidak dapat digunakan
+                            </small>
+
+                        </div>
+
+                    </article>
+
+                </div>
+
+
+                <!-- Dashboard Bottom Grid -->
+                <div class="dashboard-grid">
+
+                    <!-- Recent Codes -->
+                    <article class="dashboard-card">
+
+                        <div class="card-heading">
+
+                            <div>
+
+                                <p class="section-label">
+                                    RECENT ACTIVITY
+                                </p>
+
+                                <h3>
+                                    Kode Terbaru
+                                </h3>
+
+                            </div>
+
+                            <button
+                                type="button"
+                                id="viewAllHistoryButton"
+                                class="text-button"
+                            >
+                                Lihat Semua
+                            </button>
+
+                        </div>
+
+
+                        <div
+                            id="recentCodesList"
+                            class="recent-code-list"
+                        >
+
+                            <div class="empty-state compact">
+
+                                <span>
+                                    🎟️
+                                </span>
+
+                                <p>
+                                    Belum ada kode dibuat.
+                                </p>
+
+                            </div>
+
+                        </div>
+
+                    </article>
+
+
+                    <!-- Reward Summary -->
+                    <article class="dashboard-card">
+
+                        <div class="card-heading">
+
+                            <div>
+
+                                <p class="section-label">
+                                    REWARD SUMMARY
+                                </p>
+
+                                <h3>
+                                    Hadiah Tersedia
+                                </h3>
+
+                            </div>
+
+                            <button
+                                type="button"
+                                id="manageRewardsButton"
+                                class="text-button"
+                            >
+                                Kelola
+                            </button>
+
+                        </div>
+
+
+                        <div
+                            id="dashboardRewardList"
+                            class="dashboard-reward-list"
+                        >
+
+                            <div class="reward-summary-item">
+
+                                <span class="reward-summary-icon">
+                                    💰
+                                </span>
+
+                                <div>
+
+                                    <strong>
+                                        Hadiah Saldo
+                                    </strong>
+
+                                    <span>
+                                        Saldo digital langsung
+                                    </span>
+
+                                </div>
+
+                            </div>
+
+
+                            <div class="reward-summary-item">
+
+                                <span class="reward-summary-icon">
+                                    📱
+                                </span>
+
+                                <div>
+
+                                    <strong>
+                                        Hadiah Smartphone
+                                    </strong>
+
+                                    <span>
+                                        Android dan iPhone
+                                    </span>
+
+                                </div>
+
+                            </div>
+
+
+                            <div class="reward-summary-item">
+
+                                <span class="reward-summary-icon">
+                                    🎁
+                                </span>
+
+                                <div>
+
+                                    <strong>
+                                        Mystery Prize
+                                    </strong>
+
+                                    <span>
+                                        Hadiah eksklusif lainnya
+                                    </span>
+
+                                </div>
+
+                            </div>
+
+                        </div>
+
+                    </article>
+
+                </div>
+
+            </section>
+
+
+            <!-- =========================================
+                 GENERATE CODE SECTION
+            ========================================== -->
+
+            <section
+                id="generateSection"
+                class="admin-section"
+            >
+
+                <div class="section-heading">
+
+                    <div>
+
+                        <p class="section-label">
+                            CODE GENERATOR
+                        </p>
+
+                        <h2>
+                            Generate Kode Mystery Box
+                        </h2>
+
+                        <p>
+                            Tentukan username, hadiah, jumlah kesempatan,
+                            dan masa aktif kode.
+                        </p>
+
+                    </div>
+
+                </div>
+
+
+                <div class="generate-layout">
+
+                    <!-- Generate Form -->
+                    <article class="form-card">
+
+                        <form
+                            id="generateCodeForm"
+                            class="generate-form"
+                            novalidate
+                        >
+
+                            <!-- Username -->
+                            <div class="form-group">
+
+                                <label for="customerUsername">
+                                    Username Customer
+                                </label>
+
+                                <div class="input-wrapper">
+
+                                    <span class="input-icon">
+                                        👤
+                                    </span>
+
+                                    <input
+                                        type="text"
+                                        id="customerUsername"
+                                        name="customerUsername"
+                                        placeholder="Contoh: maulana88"
+                                        autocomplete="off"
+                                        minlength="3"
+                                        required
+                                    >
+
+                                </div>
+
+                                <small
+                                    id="customerUsernameError"
+                                    class="field-error"
+                                ></small>
+
+                            </div>
+
+
+                            <!-- Reward -->
+                            <div class="form-group">
+
+                                <label for="rewardSelect">
+                                    Pilih Hadiah
+                                </label>
+
+                                <div class="select-wrapper">
+
+                                    <span class="input-icon">
+                                        🎁
+                                    </span>
+
+                                    <select
+                                        id="rewardSelect"
+                                        name="rewardSelect"
+                                        required
+                                    >
+                                        <option value="">
+                                            Pilih hadiah
+                                        </option>
+                                    </select>
+
+                                </div>
+
+                                <small
+                                    id="rewardSelectError"
+                                    class="field-error"
+                                ></small>
+
+                            </div>
+
+
+                            <!-- Attempts -->
+                            <div class="form-group">
+
+                                <label for="openAttempts">
+                                    Kesempatan Membuka Box
+                                </label>
+
+                                <div class="input-wrapper">
+
+                                    <span class="input-icon">
+                                        📦
+                                    </span>
+
+                                    <input
+                                        type="number"
+                                        id="openAttempts"
+                                        name="openAttempts"
+                                        min="1"
+                                        max="10"
+                                        value="1"
+                                        required
+                                    >
+
+                                </div>
+
+                                <small
+                                    id="openAttemptsError"
+                                    class="field-error"
+                                ></small>
+
+                            </div>
+
+
+                            <!-- Expired Date -->
+                            <div class="form-group">
+
+                                <label for="expiredDate">
+                                    Tanggal Kedaluwarsa
+                                </label>
+
+                                <div class="input-wrapper">
+
+                                    <span class="input-icon">
+                                        📅
+                                    </span>
+
+                                    <input
+                                        type="date"
+                                        id="expiredDate"
+                                        name="expiredDate"
+                                        required
+                                    >
+
+                                </div>
+
+                                <small
+                                    id="expiredDateError"
+                                    class="field-error"
+                                ></small>
+
+                            </div>
+
+
+                            <!-- Custom Code -->
+                            <div class="form-group">
+
+                                <label for="customCode">
+                                    Kode Manual
+                                    <small>
+                                        Opsional
+                                    </small>
+                                </label>
+
+                                <div class="input-wrapper">
+
+                                    <span class="input-icon">
+                                        🔑
+                                    </span>
+
+                                    <input
+                                        type="text"
+                                        id="customCode"
+                                        name="customCode"
+                                        placeholder="Kosongkan untuk kode otomatis"
+                                        autocomplete="off"
+                                        maxlength="20"
+                                    >
+
+                                </div>
+
+                                <small
+                                    id="customCodeError"
+                                    class="field-error"
+                                ></small>
+
+                            </div>
+
+
+                            <!-- Notes -->
+                            <div class="form-group full-width">
+
+                                <label for="codeNotes">
+                                    Catatan
+                                    <small>
+                                        Opsional
+                                    </small>
+                                </label>
+
+                                <textarea
+                                    id="codeNotes"
+                                    name="codeNotes"
+                                    rows="4"
+                                    placeholder="Tambahkan catatan untuk kode ini..."
+                                ></textarea>
+
+                            </div>
+
+
+                            <!-- Submit -->
+                            <button
+                                type="submit"
+                                id="generateCodeButton"
+                                class="primary-button generate-button"
+                            >
+
+                                <span id="generateButtonText">
+                                    GENERATE KODE
+                                </span>
+
+                                <span
+                                    id="generateLoader"
+                                    class="button-loader hidden"
+                                ></span>
+
+                            </button>
+
+                        </form>
+
+                    </article>
+
+
+                    <!-- Generated Result -->
+                    <aside class="generated-result-card">
+
+                        <div class="generated-decoration"></div>
+
+                        <p class="section-label">
+                            GENERATED CODE
+                        </p>
+
+                        <h3>
+                            Kode Mystery Box
+                        </h3>
+
+                        <div
+                            id="generatedCodeEmpty"
+                            class="generated-empty"
+                        >
+
+                            <span>
+                                🎟️
+                            </span>
+
+                            <p>
+                                Kode yang berhasil dibuat akan muncul di sini.
+                            </p>
+
+                        </div>
+
+
+                        <div
+                            id="generatedCodeResult"
+                            class="generated-code-result hidden"
+                        >
+
+                            <span class="generated-status">
+                                KODE BERHASIL DIBUAT
+                            </span>
+
+                            <div class="generated-code-box">
+
+                                <strong id="generatedCodeText">
+                                    -
+                                </strong>
+
+                                <button
+                                    type="button"
+                                    id="copyGeneratedCodeButton"
+                                    aria-label="Salin kode"
+                                >
+                                    📋
+                                </button>
+
+                            </div>
+
+
+                            <div class="generated-detail-list">
+
+                                <div>
+
+                                    <span>
+                                        Username
+                                    </span>
+
+                                    <strong id="generatedUsername">
+                                        -
+                                    </strong>
+
+                                </div>
+
+
+                                <div>
+
+                                    <span>
+                                        Hadiah
+                                    </span>
+
+                                    <strong id="generatedReward">
+                                        -
+                                    </strong>
+
+                                </div>
+
+
+                                <div>
+
+                                    <span>
+                                        Kesempatan
+                                    </span>
+
+                                    <strong id="generatedAttempts">
+                                        -
+                                    </strong>
+
+                                </div>
+
+
+                                <div>
+
+                                    <span>
+                                        Kedaluwarsa
+                                    </span>
+
+                                    <strong id="generatedExpired">
+                                        -
+                                    </strong>
+
+                                </div>
+
+                            </div>
+
+
+                            <a
+                                href="mystery.html"
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                class="open-customer-button"
+                            >
+                                Buka Halaman Customer
+                            </a>
+
+                        </div>
+
+                    </aside>
+
+                </div>
+
+            </section>
+
+
+            <!-- =========================================
+                 HISTORY SECTION
+            ========================================== -->
+
+            <section
+                id="historySection"
+                class="admin-section"
+            >
+
+                <div class="section-heading history-heading">
+
+                    <div>
+
+                        <p class="section-label">
+                            CODE HISTORY
+                        </p>
+
+                        <h2>
+                            Riwayat Kode Mystery Box
+                        </h2>
+
+                        <p>
+                            Lihat semua kode aktif, terpakai,
+                            atau kedaluwarsa.
+                        </p>
+
+                    </div>
+
+
+                    <div class="section-actions">
+
+                        <button
+                            type="button"
+                            id="refreshHistoryButton"
+                            class="secondary-button"
+                        >
+                            🔄 Refresh
+                        </button>
+
+                        <button
+                            type="button"
+                            id="clearHistoryButton"
+                            class="danger-button"
+                        >
+                            🗑️ Hapus Semua
+                        </button>
+
+                    </div>
+
+                </div>
+
+
+                <!-- Filters -->
+                <div class="history-filter">
+
+                    <div class="search-wrapper">
+
+                        <span>
+                            🔎
+                        </span>
+
+                        <input
+                            type="search"
+                            id="historySearch"
+                            placeholder="Cari username atau kode..."
+                        >
+
+                    </div>
+
+
+                    <select id="historyStatusFilter">
+
+                        <option value="all">
+                            Semua Status
+                        </option>
+
+                        <option value="ACTIVE">
+                            Aktif
+                        </option>
+
+                        <option value="USED">
+                            Terpakai
+                        </option>
+
+                        <option value="EXPIRED">
+                            Kedaluwarsa
+                        </option>
+
+                    </select>
+
+
+                    <select id="historyRewardFilter">
+
+                        <option value="all">
+                            Semua Hadiah
+                        </option>
+
+                    </select>
+
+                </div>
+
+
+                <!-- History Table -->
+                <div class="table-card">
+
+                    <div class="table-responsive">
+
+                        <table class="history-table">
+
+                            <thead>
+
+                                <tr>
+
+                                    <th>
+                                        No.
+                                    </th>
+
+                                    <th>
+                                        Username
+                                    </th>
+
+                                    <th>
+                                        Kode
+                                    </th>
+
+                                    <th>
+                                        Hadiah
+                                    </th>
+
+                                    <th>
+                                        Sisa Buka
+                                    </th>
+
+                                    <th>
+                                        Kedaluwarsa
+                                    </th>
+
+                                    <th>
+                                        Status
+                                    </th>
+
+                                    <th>
+                                        Aksi
+                                    </th>
+
+                                </tr>
+
+                            </thead>
+
+
+                            <tbody id="historyTableBody">
+
+                                <tr class="empty-table-row">
+
+                                    <td colspan="8">
+
+                                        <div class="empty-state">
+
+                                            <span>
+                                                📜
+                                            </span>
+
+                                            <h3>
+                                                Belum Ada Riwayat
+                                            </h3>
+
+                                            <p>
+                                                Kode yang dibuat akan tampil di tabel ini.
+                                            </p>
+
+                                        </div>
+
+                                    </td>
+
+                                </tr>
+
+                            </tbody>
+
+                        </table>
+
+                    </div>
+
+                </div>
+
+            </section>
+
+
+            <!-- =========================================
+                 REWARD SECTION
+            ========================================== -->
+
+            <section
+                id="rewardSection"
+                class="admin-section"
+            >
+
+                <div class="section-heading">
+
+                    <div>
+
+                        <p class="section-label">
+                            REWARD MANAGEMENT
+                        </p>
+
+                        <h2>
+                            Kelola Daftar Hadiah
+                        </h2>
+
+                        <p>
+                            Aktifkan atau nonaktifkan hadiah
+                            yang tersedia di Mystery Box.
+                        </p>
+
+                    </div>
+
+                </div>
+
+
+                <!-- Add Reward Form -->
+                <article class="reward-form-card">
+
+                    <form
+                        id="addRewardForm"
+                        class="reward-form"
+                        novalidate
+                    >
+
+                        <div class="form-group">
+
+                            <label for="rewardName">
+                                Nama Hadiah
+                            </label>
+
+                            <input
+                                type="text"
+                                id="rewardName"
+                                placeholder="Contoh: SALDO 25.000"
+                                required
+                            >
+
+                            <small
+                                id="rewardNameError"
+                                class="field-error"
+                            ></small>
+
+                        </div>
+
+
+                        <div class="form-group">
+
+                            <label for="rewardCategory">
+                                Kategori
+                            </label>
+
+                            <select
+                                id="rewardCategory"
+                                required
+                            >
+
+                                <option value="">
+                                    Pilih kategori
+                                </option>
+
+                                <option value="saldo">
+                                    Saldo
+                                </option>
+
+                                <option value="smartphone">
+                                    Smartphone
+                                </option>
+
+                                <option value="other">
+                                    Lainnya
+                                </option>
+
+                            </select>
+
+                            <small
+                                id="rewardCategoryError"
+                                class="field-error"
+                            ></small>
+
+                        </div>
+
+
+                        <div class="form-group">
+
+                            <label for="rewardIcon">
+                                Ikon
+                            </label>
+
+                            <input
+                                type="text"
+                                id="rewardIcon"
+                                placeholder="Contoh: 💰"
+                                maxlength="4"
+                                required
+                            >
+
+                            <small
+                                id="rewardIconError"
+                                class="field-error"
+                            ></small>
+
+                        </div>
+
+
+                        <button
+                            type="submit"
+                            class="primary-button"
+                        >
+                            Tambah Hadiah
+                        </button>
+
+                    </form>
+
+                </article>
+
+
+                <!-- Reward List -->
+                <div
+                    id="rewardGrid"
+                    class="reward-grid"
+                >
+
+                    <div class="empty-state">
+
+                        <span>
+                            🎁
+                        </span>
+
+                        <h3>
+                            Daftar Hadiah Belum Dimuat
+                        </h3>
+
+                        <p>
+                            Hadiah akan ditampilkan oleh sistem.
+                        </p>
+
+                    </div>
+
+                </div>
+
+            </section>
+
+
+            <!-- =========================================
+                 SETTINGS SECTION
+            ========================================== -->
+
+            <section
+                id="settingsSection"
+                class="admin-section"
+            >
+
+                <div class="section-heading">
+
+                    <div>
+
+                        <p class="section-label">
+                            SYSTEM SETTINGS
+                        </p>
+
+                        <h2>
+                            Pengaturan Mystery Box
+                        </h2>
+
+                        <p>
+                            Atur nama sistem, jumlah box,
+                            dan tampilan halaman customer.
+                        </p>
+
+                    </div>
+
+                </div>
+
+
+                <div class="settings-grid">
+
+                    <!-- General Settings -->
+                    <article class="settings-card">
+
+                        <div class="card-heading">
+
+                            <div>
+
+                                <p class="section-label">
+                                    GENERAL
+                                </p>
+
+                                <h3>
+                                    Pengaturan Umum
+                                </h3>
+
+                            </div>
+
+                        </div>
+
+
+                        <form
+                            id="generalSettingsForm"
+                            class="settings-form"
+                        >
+
+                            <div class="form-group">
+
+                                <label for="systemName">
+                                    Nama Sistem
+                                </label>
+
+                                <input
+                                    type="text"
+                                    id="systemName"
+                                    value="ODDIGO MYSTERY BOX"
+                                >
+
+                            </div>
+
+
+                            <div class="form-group">
+
+                                <label for="totalBoxes">
+                                    Jumlah Mystery Box
+                                </label>
+
+                                <select id="totalBoxes">
+
+                                    <option value="6">
+                                        6 Box
+                                    </option>
+
+                                </select>
+
+                            </div>
+
+
+                            <div class="form-group">
+
+                                <label for="defaultExpiredDays">
+                                    Masa Aktif Default
+                                </label>
+
+                                <input
+                                    type="number"
+                                    id="defaultExpiredDays"
+                                    min="1"
+                                    max="365"
+                                    value="7"
+                                >
+
+                            </div>
+
+
+                            <button
+                                type="submit"
+                                class="primary-button"
+                            >
+                                Simpan Pengaturan
+                            </button>
+
+                        </form>
+
+                    </article>
+
+
+                    <!-- Customer Page Settings -->
+                    <article class="settings-card">
+
+                        <div class="card-heading">
+
+                            <div>
+
+                                <p class="section-label">
+                                    CUSTOMER PAGE
+                                </p>
+
+                                <h3>
+                                    Halaman Customer
+                                </h3>
+
+                            </div>
+
+                        </div>
+
+
+                        <form
+                            id="customerSettingsForm"
+                            class="settings-form"
+                        >
+
+                            <div class="form-group">
+
+                                <label for="customerHeading">
+                                    Judul Halaman
+                                </label>
+
+                                <input
+                                    type="text"
+                                    id="customerHeading"
+                                    value="PILIH MYSTERY BOX"
+                                >
+
+                            </div>
+
+
+                            <div class="form-group">
+
+                                <label for="customerDescription">
+                                    Deskripsi
+                                </label>
+
+                                <textarea
+                                    id="customerDescription"
+                                    rows="4"
+                                >Masukkan username dan kode untuk membuka hadiah misterius.</textarea>
+
+                            </div>
+
+
+                            <label class="setting-toggle">
+
+                                <input
+                                    type="checkbox"
+                                    id="enableSound"
+                                    checked
+                                >
+
+                                <span class="toggle-slider"></span>
+
+                                <span>
+                                    Aktifkan efek suara
+                                </span>
+
+                            </label>
+
+
+                            <label class="setting-toggle">
+
+                                <input
+                                    type="checkbox"
+                                    id="enableConfetti"
+                                    checked
+                                >
+
+                                <span class="toggle-slider"></span>
+
+                                <span>
+                                    Aktifkan confetti kemenangan
+                                </span>
+
+                            </label>
+
+
+                            <button
+                                type="submit"
+                                class="primary-button"
+                            >
+                                Simpan Tampilan
+                            </button>
+
+                        </form>
+
+                    </article>
+
+
+                    <!-- Data Settings -->
+                    <article class="settings-card danger-settings">
+
+                        <div class="card-heading">
+
+                            <div>
+
+                                <p class="section-label">
+                                    DATA MANAGEMENT
+                                </p>
+
+                                <h3>
+                                    Kelola Data Sistem
+                                </h3>
+
+                            </div>
+
+                        </div>
+
+
+                        <p>
+                            Tindakan ini dapat menghapus seluruh kode
+                            dan mengembalikan hadiah ke pengaturan awal.
+                        </p>
+
+
+                        <div class="danger-action-list">
+
+                            <button
+                                type="button"
+                                id="exportDataButton"
+                                class="secondary-button"
+                            >
+                                📤 Export Data
+                            </button>
+
+
+                            <button
+                                type="button"
+                                id="resetRewardsButton"
+                                class="warning-button"
+                            >
+                                🔄 Reset Hadiah
+                            </button>
+
+
+                            <button
+                                type="button"
+                                id="resetSystemButton"
+                                class="danger-button"
+                            >
+                                ⚠️ Reset Semua Data
+                            </button>
+
+                        </div>
+
+                    </article>
+
+                </div>
+
+            </section>
+
+        </div>
+
+    </main>
+
+
+    <!-- Confirmation Modal -->
+    <div
+        id="confirmationModal"
+        class="confirmation-modal hidden"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="confirmationTitle"
+    >
+
+        <div class="modal-backdrop"></div>
+
+        <div class="confirmation-card">
+
+            <div
+                id="confirmationIcon"
+                class="confirmation-icon"
+            >
+                ⚠️
+            </div>
+
+            <h2 id="confirmationTitle">
+                Konfirmasi
+            </h2>
+
+            <p id="confirmationMessage">
+                Apakah Anda yakin ingin melanjutkan?
+            </p>
+
+            <div class="confirmation-actions">
+
+                <button
+                    type="button"
+                    id="confirmationCancelButton"
+                    class="secondary-button"
+                >
+                    Batal
+                </button>
+
+                <button
+                    type="button"
+                    id="confirmationConfirmButton"
+                    class="danger-button"
+                >
+                    Ya, Lanjutkan
+                </button>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- Toast -->
+    <div
+        id="adminToast"
+        class="toast"
+        role="status"
+        aria-live="polite"
+    ></div>
+
+
+    <!-- Scripts -->
+    <script src="js/storage.js"></script>
+    <script src="js/admin.js"></script>
+
+</body>
+</html>
