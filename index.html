@@ -1,1 +1,358 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
 
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <meta
+        name="description"
+        content="ODDIGO Mystery Box Admin Login"
+    >
+
+    <title>ODDIGO Mystery Box - Admin Login</title>
+
+    <link
+        rel="preconnect"
+        href="https://fonts.googleapis.com"
+    >
+
+    <link
+        rel="preconnect"
+        href="https://fonts.gstatic.com"
+        crossorigin
+    >
+
+    <link
+        href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;600;700;800&family=Rajdhani:wght@400;500;600;700&display=swap"
+        rel="stylesheet"
+    >
+
+    <link
+        rel="stylesheet"
+        href="css/login.css"
+    >
+
+    <link
+        rel="stylesheet"
+        href="css/responsive.css"
+    >
+</head>
+
+<body>
+
+    <!-- Background Effects -->
+    <div
+        class="background-effects"
+        aria-hidden="true"
+    >
+        <div class="background-grid"></div>
+
+        <div
+            class="glow-circle glow-circle-one"
+        ></div>
+
+        <div
+            class="glow-circle glow-circle-two"
+        ></div>
+
+        <span
+            class="particle particle-one"
+        ></span>
+
+        <span
+            class="particle particle-two"
+        ></span>
+
+        <span
+            class="particle particle-three"
+        ></span>
+
+        <span
+            class="particle particle-four"
+        ></span>
+
+        <span
+            class="particle particle-five"
+        ></span>
+    </div>
+
+
+    <!-- Login Page -->
+    <main class="login-page">
+
+        <section
+            class="login-card"
+            aria-labelledby="loginTitle"
+        >
+
+            <!-- Decorative Light -->
+            <div
+                class="card-light card-light-one"
+                aria-hidden="true"
+            ></div>
+
+            <div
+                class="card-light card-light-two"
+                aria-hidden="true"
+            ></div>
+
+
+            <!-- Brand -->
+            <div class="brand-area">
+
+                <div class="brand-logo">
+
+                    <img
+                        src="assets/logo/oddigo-logo.png"
+                        alt="Logo ODDIGO"
+                        onerror="this.style.display='none'; this.parentElement.classList.add('logo-fallback');"
+                    >
+
+                    <span class="fallback-text">
+                        O
+                    </span>
+
+                </div>
+
+                <div class="brand-text">
+
+                    <p class="brand-label">
+                        PREMIUM REWARD SYSTEM
+                    </p>
+
+                    <h1>
+                        ODDIGO
+                    </h1>
+
+                    <span>
+                        MYSTERY BOX
+                    </span>
+
+                </div>
+
+            </div>
+
+
+            <!-- Heading -->
+            <div class="login-heading">
+
+                <p class="section-label">
+                    ADMIN ACCESS
+                </p>
+
+                <h2 id="loginTitle">
+                    Masuk ke Panel Admin
+                </h2>
+
+                <p>
+                    Kelola kode, hadiah saldo, dan hadiah HP
+                    dalam satu dashboard.
+                </p>
+
+            </div>
+
+
+            <!-- Login Form -->
+            <form
+                id="loginForm"
+                class="login-form"
+                novalidate
+            >
+
+                <!-- Username -->
+                <div class="form-group">
+
+                    <label for="username">
+                        Username
+                    </label>
+
+                    <div class="input-wrapper">
+
+                        <span
+                            class="input-icon"
+                            aria-hidden="true"
+                        >
+                            👤
+                        </span>
+
+                        <input
+                            type="text"
+                            id="username"
+                            name="username"
+                            placeholder="Masukkan username admin"
+                            autocomplete="username"
+                            minlength="3"
+                            required
+                        >
+
+                    </div>
+
+                    <small
+                        id="usernameError"
+                        class="field-error"
+                        aria-live="polite"
+                    ></small>
+
+                </div>
+
+
+                <!-- Password -->
+                <div class="form-group">
+
+                    <label for="password">
+                        Password
+                    </label>
+
+                    <div class="input-wrapper">
+
+                        <span
+                            class="input-icon"
+                            aria-hidden="true"
+                        >
+                            🔐
+                        </span>
+
+                        <input
+                            type="password"
+                            id="password"
+                            name="password"
+                            placeholder="Masukkan password admin"
+                            autocomplete="current-password"
+                            minlength="4"
+                            required
+                        >
+
+                        <button
+                            type="button"
+                            id="togglePassword"
+                            class="password-toggle"
+                            aria-label="Tampilkan password"
+                            aria-pressed="false"
+                        >
+                            👁️
+                        </button>
+
+                    </div>
+
+                    <small
+                        id="passwordError"
+                        class="field-error"
+                        aria-live="polite"
+                    ></small>
+
+                </div>
+
+
+                <!-- Login Options -->
+                <div class="login-options">
+
+                    <label class="remember-wrapper">
+
+                        <input
+                            type="checkbox"
+                            id="rememberUsername"
+                        >
+
+                        <span class="custom-checkbox"></span>
+
+                        <span>
+                            Ingat username
+                        </span>
+
+                    </label>
+
+                    <span class="secure-label">
+                        🔒 Secure Login
+                    </span>
+
+                </div>
+
+
+                <!-- Login Message -->
+                <div
+                    id="loginMessage"
+                    class="login-message"
+                    role="alert"
+                    aria-live="polite"
+                ></div>
+
+
+                <!-- Login Button -->
+                <button
+                    type="submit"
+                    id="loginButton"
+                    class="login-button"
+                >
+
+                    <span
+                        id="loginButtonText"
+                        class="button-text"
+                    >
+                        MASUK KE DASHBOARD
+                    </span>
+
+                    <span
+                        id="loginLoader"
+                        class="button-loader hidden"
+                        aria-hidden="true"
+                    ></span>
+
+                </button>
+
+            </form>
+
+
+            <!-- Demo Credential -->
+            <div class="demo-account">
+
+                <div class="demo-icon">
+                    🎁
+                </div>
+
+                <div>
+
+                    <strong>
+                        Demo Admin
+                    </strong>
+
+                    <p>
+                        Username:
+                        <span>admin</span>
+                    </p>
+
+                    <p>
+                        Password:
+                        <span>oddigo</span>
+                    </p>
+
+                </div>
+
+            </div>
+
+
+            <!-- Footer -->
+            <footer class="login-footer">
+
+                <p>
+                    © 2026 ODDIGO Mystery Box
+                </p>
+
+                <span>
+                    Saldo • Smartphone • Hadiah Eksklusif
+                </span>
+
+            </footer>
+
+        </section>
+
+    </main>
+
+
+    <script src="js/login.js"></script>
+
+</body>
+</html>
