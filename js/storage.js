@@ -1125,6 +1125,34 @@ const OddigoStorage = (() => {
         safeJSONParse,
         safeJSONStringify
     });
+
+         CODE_STATUS,
+
+        getMysteryCodes,
+        getMysteryCodeById,
+        getMysteryCodeByCode,
+        getMysteryCodesByUsername,
+        getMysteryCodeStatistics,
+
+        createMysteryCode,
+        updateMysteryCode,
+        deleteMysteryCode,
+        deleteAllMysteryCodes,
+
+        setMysteryCodeEnabled,
+        toggleMysteryCode,
+
+        verifyMysteryCode,
+        consumeMysteryCodeAttempt,
+        openMysteryCode,
+        resetMysteryCodeOpening,
+        extendMysteryCodeExpiration,
+
+        validateMysteryCodeData,
+        normalizeMysteryCodeData,
+        resolveMysteryCodeStatus,
+        refreshMysteryCodeStatuses,
+        sortMysteryCodes,
 })();
 
 
