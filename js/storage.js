@@ -1055,7 +1055,1447 @@ const OddigoStorage = (() => {
         };
     }
 
+/* =================================================
+   ADMIN SESSION MANAGER
+================================================= */
 
+const SESSION_STATUS = Object.freeze({
+    ACTIVE: "active",
+    EXPIRED: "expired",
+    INVALID: "invalid",
+    LOGGED_OUT: "logged_out"
+});
+
+
+const DEFAULT_SESSION_DURATION = 8 * 60 * 60 * 1000;
+
+
+/**
+ * Membuat hash sederhana untuk password.
+ *
+ * Catatan:
+ * Ini hanya digunakan untuk aplikasi localStorage.
+ * Bukan pengganti keamanan server-side.
+ *
+ * @param {string} value
+ * @returns {string}
+ */
+function createSimpleHash(value) {
+    const input = String(value ?? "");
+
+    let hash = 2166136261;
+
+    for (
+        let index = 0;
+        index < input.length;
+        index += 1
+    ) {
+        hash ^= input.charCodeAt(index);
+
+        hash +=
+            (hash << 1) +
+            (hash << 4) +
+            (hash << 7) +
+            (hash << 8) +
+            (hash << 24);
+    }
+
+    return (
+        "oddigo_" +
+        (hash >>> 0).toString(16)
+    );
+}
+
+
+/**
+ * Membuat token session acak.
+ *
+ * @returns {string}
+ */
+function generateSessionToken() {
+    return [
+        generateRandomString(16),
+        Date.now().toString(36),
+        generateRandomString(16)
+    ].join(".");
+}
+
+
+/**
+ * Mengambil konfigurasi admin.
+ *
+ * Password asli tidak disertakan secara default.
+ *
+ * @param {Object} options
+ * @returns {Object|null}
+ */
+function getAdminAccount(options = {}) {
+    const database = getDatabase();
+
+    if (!isPlainObject(database.admin)) {
+        return null;
+    }
+
+    const admin = deepClone(
+        database.admin
+    );
+
+    if (options.includePassword !== true) {
+        delete admin.password;
+        delete admin.passwordHash;
+    }
+
+    return admin;
+}
+
+
+/**
+ * Menyamakan struktur akun admin.
+ *
+ * @param {Object} adminData
+ * @param {Object|null} existingAdmin
+ * @returns {Object}
+ */
+function normalizeAdminData(
+    adminData = {},
+    existingAdmin = null
+) {
+    const currentAdmin =
+        isPlainObject(existingAdmin)
+            ? existingAdmin
+            : {};
+
+    const currentTime =
+        getCurrentISOTime();
+
+    const username =
+        normalizeText(
+            adminData.username ??
+            currentAdmin.username ??
+            DEFAULT_ADMIN.username
+        );
+
+    const displayName =
+        normalizeText(
+            adminData.displayName ??
+            currentAdmin.displayName ??
+            DEFAULT_ADMIN.displayName
+        );
+
+    const role =
+        slugify(
+            adminData.role ??
+            currentAdmin.role ??
+            DEFAULT_ADMIN.role
+        ) || "admin";
+
+    const rawPassword =
+        normalizeText(
+            adminData.password
+        );
+
+    const existingPassword =
+        normalizeText(
+            currentAdmin.password
+        );
+
+    const existingHash =
+        normalizeText(
+            currentAdmin.passwordHash
+        );
+
+    let password =
+        existingPassword ||
+        DEFAULT_ADMIN.password;
+
+    let passwordHash =
+        existingHash ||
+        createSimpleHash(password);
+
+    if (rawPassword) {
+        password = rawPassword;
+        passwordHash =
+            createSimpleHash(
+                rawPassword
+            );
+    }
+
+    return {
+        username,
+        usernameNormalized:
+            normalizeUsername(username),
+
+        password,
+        passwordHash,
+
+        displayName,
+        role,
+
+        enabled:
+            typeof adminData.enabled ===
+            "boolean"
+                ? adminData.enabled
+                : currentAdmin.enabled !==
+                    false,
+
+        failedLoginAttempts:
+            Number(
+                adminData.failedLoginAttempts ??
+                currentAdmin.failedLoginAttempts ??
+                0
+            ) || 0,
+
+        lastLoginAt:
+            adminData.lastLoginAt ??
+            currentAdmin.lastLoginAt ??
+            null,
+
+        lastLogoutAt:
+            adminData.lastLogoutAt ??
+            currentAdmin.lastLogoutAt ??
+            null,
+
+        createdAt:
+            currentAdmin.createdAt ||
+            currentTime,
+
+        updatedAt:
+            currentTime
+    };
+}
+
+
+/**
+ * Memvalidasi perubahan data admin.
+ *
+ * @param {Object} adminData
+ * @param {Object} options
+ * @returns {Object}
+ */
+function validateAdminData(
+    adminData,
+    options = {}
+) {
+    const errors = {};
+
+    if (!isPlainObject(adminData)) {
+        return {
+            valid: false,
+            errors: {
+                admin:
+                    "Data admin tidak valid."
+            },
+            message:
+                "Data admin tidak valid."
+        };
+    }
+
+    const username =
+        normalizeText(
+            adminData.username
+        );
+
+    const displayName =
+        normalizeText(
+            adminData.displayName
+        );
+
+    const password =
+        normalizeText(
+            adminData.password
+        );
+
+    if (!username) {
+        errors.username =
+            "Username admin wajib diisi.";
+    } else if (username.length < 3) {
+        errors.username =
+            "Username minimal 3 karakter.";
+    } else if (username.length > 40) {
+        errors.username =
+            "Username maksimal 40 karakter.";
+    } else if (
+        !/^[a-zA-Z0-9._-]+$/.test(
+            username
+        )
+    ) {
+        errors.username =
+            "Username hanya boleh berisi huruf, angka, titik, garis bawah, atau tanda minus.";
+    }
+
+    if (!displayName) {
+        errors.displayName =
+            "Nama admin wajib diisi.";
+    } else if (
+        displayName.length > 80
+    ) {
+        errors.displayName =
+            "Nama admin maksimal 80 karakter.";
+    }
+
+    if (
+        options.requirePassword === true &&
+        !password
+    ) {
+        errors.password =
+            "Password wajib diisi.";
+    }
+
+    if (
+        password &&
+        password.length < 4
+    ) {
+        errors.password =
+            "Password minimal 4 karakter.";
+    }
+
+    if (
+        password &&
+        password.length > 100
+    ) {
+        errors.password =
+            "Password maksimal 100 karakter.";
+    }
+
+    const errorMessages =
+        Object.values(errors);
+
+    return {
+        valid:
+            errorMessages.length === 0,
+        errors,
+        message:
+            errorMessages[0] ||
+            "Data admin valid."
+    };
+}
+
+
+/**
+ * Memperbarui akun admin.
+ *
+ * @param {Object} adminData
+ * @returns {Object}
+ */
+function updateAdminAccount(
+    adminData
+) {
+    const existingAdmin =
+        getAdminAccount({
+            includePassword: true
+        });
+
+    const mergedAdmin = {
+        ...existingAdmin,
+        ...adminData
+    };
+
+    const validation =
+        validateAdminData(
+            mergedAdmin,
+            {
+                requirePassword: false
+            }
+        );
+
+    if (!validation.valid) {
+        return {
+            success: false,
+            message:
+                validation.message,
+            errors:
+                validation.errors,
+            admin: null
+        };
+    }
+
+    const updatedAdmin =
+        normalizeAdminData(
+            adminData,
+            existingAdmin
+        );
+
+    const saveResult =
+        updateDatabase(
+            (database) => {
+                database.admin =
+                    updatedAdmin;
+
+                database.activityLogs.unshift({
+                    id:
+                        generateId("log"),
+
+                    type:
+                        "admin",
+
+                    action:
+                        "admin_updated",
+
+                    description:
+                        "Data akun administrator berhasil diperbarui.",
+
+                    metadata: {
+                        username:
+                            updatedAdmin.username,
+                        role:
+                            updatedAdmin.role
+                    },
+
+                    createdAt:
+                        getCurrentISOTime()
+                });
+
+                return database;
+            }
+        );
+
+    if (
+        saveResult.success &&
+        adminData.password
+    ) {
+        logoutAdmin({
+            reason:
+                "password_changed",
+            logActivity: false
+        });
+    }
+
+    return {
+        success:
+            saveResult.success,
+
+        message:
+            saveResult.success
+                ? "Akun admin berhasil diperbarui."
+                : saveResult.message,
+
+        admin:
+            saveResult.success
+                ? getAdminAccount()
+                : null
+    };
+}
+
+
+/**
+ * Mengganti password administrator.
+ *
+ * @param {string} currentPassword
+ * @param {string} newPassword
+ * @param {string} confirmation
+ * @returns {Object}
+ */
+function changeAdminPassword(
+    currentPassword,
+    newPassword,
+    confirmation
+) {
+    const admin =
+        getAdminAccount({
+            includePassword: true
+        });
+
+    if (!admin) {
+        return {
+            success: false,
+            message:
+                "Akun admin tidak ditemukan."
+        };
+    }
+
+    const currentPasswordHash =
+        createSimpleHash(
+            normalizeText(
+                currentPassword
+            )
+        );
+
+    const storedPasswordHash =
+        admin.passwordHash ||
+        createSimpleHash(
+            admin.password
+        );
+
+    if (
+        currentPasswordHash !==
+        storedPasswordHash
+    ) {
+        return {
+            success: false,
+            message:
+                "Password lama tidak sesuai."
+        };
+    }
+
+    const normalizedNewPassword =
+        normalizeText(
+            newPassword
+        );
+
+    if (
+        normalizedNewPassword.length < 4
+    ) {
+        return {
+            success: false,
+            message:
+                "Password baru minimal 4 karakter."
+        };
+    }
+
+    if (
+        normalizedNewPassword !==
+        normalizeText(confirmation)
+    ) {
+        return {
+            success: false,
+            message:
+                "Konfirmasi password tidak sesuai."
+        };
+    }
+
+    if (
+        createSimpleHash(
+            normalizedNewPassword
+        ) === storedPasswordHash
+    ) {
+        return {
+            success: false,
+            message:
+                "Password baru tidak boleh sama dengan password lama."
+        };
+    }
+
+    return updateAdminAccount({
+        password:
+            normalizedNewPassword
+    });
+}
+
+
+/**
+ * Menyimpan username yang diingat browser.
+ *
+ * @param {string} username
+ * @returns {boolean}
+ */
+function rememberAdminUsername(
+    username
+) {
+    const normalizedUsername =
+        normalizeText(username);
+
+    if (!normalizedUsername) {
+        return removeStorage(
+            STORAGE_KEYS.REMEMBERED_USERNAME
+        );
+    }
+
+    return writeStorage(
+        STORAGE_KEYS.REMEMBERED_USERNAME,
+        {
+            username:
+                normalizedUsername,
+            savedAt:
+                getCurrentISOTime()
+        }
+    );
+}
+
+
+/**
+ * Mengambil username yang pernah diingat.
+ *
+ * @returns {string}
+ */
+function getRememberedAdminUsername() {
+    const rememberedData =
+        readStorage(
+            STORAGE_KEYS.REMEMBERED_USERNAME,
+            null
+        );
+
+    if (
+        !isPlainObject(
+            rememberedData
+        )
+    ) {
+        return "";
+    }
+
+    return normalizeText(
+        rememberedData.username
+    );
+}
+
+
+/**
+ * Menghapus username yang disimpan.
+ *
+ * @returns {boolean}
+ */
+function clearRememberedAdminUsername() {
+    return removeStorage(
+        STORAGE_KEYS.REMEMBERED_USERNAME
+    );
+}
+
+
+/**
+ * Membuat session admin.
+ *
+ * @param {Object} admin
+ * @param {Object} options
+ * @returns {Object}
+ */
+function createAdminSession(
+    admin,
+    options = {}
+) {
+    const durationValue =
+        Number(
+            options.duration ??
+            DEFAULT_SESSION_DURATION
+        );
+
+    const duration =
+        Number.isFinite(
+            durationValue
+        )
+            ? Math.max(
+                60 * 1000,
+                durationValue
+            )
+            : DEFAULT_SESSION_DURATION;
+
+    const currentTime =
+        Date.now();
+
+    const session = {
+        token:
+            generateSessionToken(),
+
+        username:
+            admin.username,
+
+        displayName:
+            admin.displayName,
+
+        role:
+            admin.role,
+
+        status:
+            SESSION_STATUS.ACTIVE,
+
+        createdAt:
+            new Date(
+                currentTime
+            ).toISOString(),
+
+        lastActivityAt:
+            new Date(
+                currentTime
+            ).toISOString(),
+
+        expiresAt:
+            new Date(
+                currentTime + duration
+            ).toISOString(),
+
+        duration,
+
+        persistent:
+            options.persistent === true
+    };
+
+    const saved =
+        writeStorage(
+            STORAGE_KEYS.SESSION,
+            session
+        );
+
+    return {
+        success: saved,
+        session:
+            saved
+                ? deepClone(session)
+                : null,
+        message:
+            saved
+                ? "Session admin berhasil dibuat."
+                : "Session admin gagal dibuat."
+    };
+}
+
+
+/**
+ * Mengambil session mentah.
+ *
+ * @returns {Object|null}
+ */
+function getRawAdminSession() {
+    const session =
+        readStorage(
+            STORAGE_KEYS.SESSION,
+            null
+        );
+
+    return isPlainObject(session)
+        ? session
+        : null;
+}
+
+
+/**
+ * Menentukan status session.
+ *
+ * @param {Object} session
+ * @returns {string}
+ */
+function resolveAdminSessionStatus(
+    session
+) {
+    if (!isPlainObject(session)) {
+        return SESSION_STATUS.INVALID;
+    }
+
+    if (
+        session.status ===
+        SESSION_STATUS.LOGGED_OUT
+    ) {
+        return SESSION_STATUS.LOGGED_OUT;
+    }
+
+    if (
+        !session.token ||
+        !session.username ||
+        !isValidDate(
+            session.expiresAt
+        )
+    ) {
+        return SESSION_STATUS.INVALID;
+    }
+
+    if (
+        new Date(
+            session.expiresAt
+        ).getTime() <= Date.now()
+    ) {
+        return SESSION_STATUS.EXPIRED;
+    }
+
+    return SESSION_STATUS.ACTIVE;
+}
+
+
+/**
+ * Mengambil session admin yang valid.
+ *
+ * @param {Object} options
+ * @returns {Object|null}
+ */
+function getAdminSession(
+    options = {}
+) {
+    const session =
+        getRawAdminSession();
+
+    const status =
+        resolveAdminSessionStatus(
+            session
+        );
+
+    if (
+        status !==
+        SESSION_STATUS.ACTIVE
+    ) {
+        if (
+            options.clearInvalid !== false &&
+            session
+        ) {
+            removeStorage(
+                STORAGE_KEYS.SESSION
+            );
+        }
+
+        return null;
+    }
+
+    return deepClone({
+        ...session,
+        status
+    });
+}
+
+
+/**
+ * Memeriksa apakah admin sedang login.
+ *
+ * @returns {boolean}
+ */
+function isAdminLoggedIn() {
+    return Boolean(
+        getAdminSession()
+    );
+}
+
+
+/**
+ * Login administrator.
+ *
+ * @param {string} username
+ * @param {string} password
+ * @param {Object} options
+ * @returns {Object}
+ */
+function loginAdmin(
+    username,
+    password,
+    options = {}
+) {
+    const normalizedUsername =
+        normalizeUsername(
+            username
+        );
+
+    const normalizedPassword =
+        normalizeText(
+            password
+        );
+
+    if (!normalizedUsername) {
+        return {
+            success: false,
+            reason:
+                "invalid_username",
+            message:
+                "Username wajib diisi.",
+            session: null
+        };
+    }
+
+    if (!normalizedPassword) {
+        return {
+            success: false,
+            reason:
+                "invalid_password",
+            message:
+                "Password wajib diisi.",
+            session: null
+        };
+    }
+
+    const database =
+        getDatabase();
+
+    const admin =
+        normalizeAdminData(
+            database.admin,
+            database.admin
+        );
+
+    if (admin.enabled === false) {
+        return {
+            success: false,
+            reason:
+                "account_disabled",
+            message:
+                "Akun administrator sedang dinonaktifkan.",
+            session: null
+        };
+    }
+
+    const usernameMatches =
+        admin.usernameNormalized ===
+        normalizedUsername;
+
+    const passwordMatches =
+        admin.passwordHash ===
+        createSimpleHash(
+            normalizedPassword
+        );
+
+    if (
+        !usernameMatches ||
+        !passwordMatches
+    ) {
+        updateDatabase(
+            (workingDatabase) => {
+                const currentAdmin =
+                    normalizeAdminData(
+                        workingDatabase.admin,
+                        workingDatabase.admin
+                    );
+
+                currentAdmin.failedLoginAttempts =
+                    Number(
+                        currentAdmin
+                            .failedLoginAttempts
+                    ) + 1;
+
+                currentAdmin.updatedAt =
+                    getCurrentISOTime();
+
+                workingDatabase.admin =
+                    currentAdmin;
+
+                workingDatabase.activityLogs.unshift({
+                    id:
+                        generateId("log"),
+
+                    type:
+                        "authentication",
+
+                    action:
+                        "login_failed",
+
+                    description:
+                        `Percobaan login gagal untuk username "${normalizeText(username)}".`,
+
+                    metadata: {
+                        username:
+                            normalizeText(
+                                username
+                            )
+                    },
+
+                    createdAt:
+                        getCurrentISOTime()
+                });
+
+                return workingDatabase;
+            }
+        );
+
+        return {
+            success: false,
+            reason:
+                "invalid_credentials",
+            message:
+                "Username atau password tidak sesuai.",
+            session: null
+        };
+    }
+
+    const sessionResult =
+        createAdminSession(
+            admin,
+            {
+                duration:
+                    options.duration,
+
+                persistent:
+                    options.remember === true
+            }
+        );
+
+    if (!sessionResult.success) {
+        return {
+            success: false,
+            reason:
+                "session_failed",
+            message:
+                sessionResult.message,
+            session: null
+        };
+    }
+
+    if (options.remember === true) {
+        rememberAdminUsername(
+            admin.username
+        );
+    } else if (
+        options.clearRemembered === true
+    ) {
+        clearRememberedAdminUsername();
+    }
+
+    updateDatabase(
+        (workingDatabase) => {
+            const currentAdmin =
+                normalizeAdminData(
+                    workingDatabase.admin,
+                    workingDatabase.admin
+                );
+
+            currentAdmin.failedLoginAttempts =
+                0;
+
+            currentAdmin.lastLoginAt =
+                getCurrentISOTime();
+
+            currentAdmin.updatedAt =
+                getCurrentISOTime();
+
+            workingDatabase.admin =
+                currentAdmin;
+
+            workingDatabase.activityLogs.unshift({
+                id:
+                    generateId("log"),
+
+                type:
+                    "authentication",
+
+                action:
+                    "login_success",
+
+                description:
+                    `Administrator "${admin.username}" berhasil login.`,
+
+                metadata: {
+                    username:
+                        admin.username,
+                    role:
+                        admin.role
+                },
+
+                createdAt:
+                    getCurrentISOTime()
+            });
+
+            return workingDatabase;
+        }
+    );
+
+    return {
+        success: true,
+        reason:
+            "authenticated",
+        message:
+            "Login berhasil.",
+        session:
+            sessionResult.session,
+        admin:
+            getAdminAccount()
+    };
+}
+
+
+/**
+ * Memperbarui aktivitas terakhir session.
+ *
+ * @param {Object} options
+ * @returns {Object}
+ */
+function touchAdminSession(
+    options = {}
+) {
+    const session =
+        getAdminSession();
+
+    if (!session) {
+        return {
+            success: false,
+            message:
+                "Session admin tidak aktif.",
+            session: null
+        };
+    }
+
+    const currentTime =
+        Date.now();
+
+    const extendSession =
+        options.extend !== false;
+
+    const duration =
+        Number(
+            session.duration
+        ) ||
+        DEFAULT_SESSION_DURATION;
+
+    const updatedSession = {
+        ...session,
+
+        lastActivityAt:
+            new Date(
+                currentTime
+            ).toISOString(),
+
+        expiresAt:
+            extendSession
+                ? new Date(
+                    currentTime +
+                    duration
+                ).toISOString()
+                : session.expiresAt,
+
+        status:
+            SESSION_STATUS.ACTIVE
+    };
+
+    const saved =
+        writeStorage(
+            STORAGE_KEYS.SESSION,
+            updatedSession
+        );
+
+    return {
+        success: saved,
+        message:
+            saved
+                ? "Session berhasil diperbarui."
+                : "Session gagal diperbarui.",
+        session:
+            saved
+                ? deepClone(
+                    updatedSession
+                )
+                : null
+    };
+}
+
+
+/**
+ * Memperpanjang session admin.
+ *
+ * @param {number} duration
+ * @returns {Object}
+ */
+function extendAdminSession(
+    duration =
+        DEFAULT_SESSION_DURATION
+) {
+    const session =
+        getAdminSession();
+
+    if (!session) {
+        return {
+            success: false,
+            message:
+                "Session admin tidak ditemukan.",
+            session: null
+        };
+    }
+
+    const durationValue =
+        Number(duration);
+
+    if (
+        !Number.isFinite(
+            durationValue
+        ) ||
+        durationValue <
+            60 * 1000
+    ) {
+        return {
+            success: false,
+            message:
+                "Durasi session tidak valid.",
+            session: null
+        };
+    }
+
+    const currentTime =
+        Date.now();
+
+    const updatedSession = {
+        ...session,
+
+        duration:
+            durationValue,
+
+        lastActivityAt:
+            new Date(
+                currentTime
+            ).toISOString(),
+
+        expiresAt:
+            new Date(
+                currentTime +
+                durationValue
+            ).toISOString()
+    };
+
+    const saved =
+        writeStorage(
+            STORAGE_KEYS.SESSION,
+            updatedSession
+        );
+
+    return {
+        success: saved,
+        message:
+            saved
+                ? "Session berhasil diperpanjang."
+                : "Session gagal diperpanjang.",
+        session:
+            saved
+                ? deepClone(
+                    updatedSession
+                )
+                : null
+    };
+}
+
+
+/**
+ * Mengambil sisa durasi session.
+ *
+ * @returns {number}
+ */
+function getAdminSessionRemainingTime() {
+    const session =
+        getAdminSession();
+
+    if (!session) {
+        return 0;
+    }
+
+    return Math.max(
+        0,
+        new Date(
+            session.expiresAt
+        ).getTime() - Date.now()
+    );
+}
+
+
+/**
+ * Logout administrator.
+ *
+ * @param {Object} options
+ * @returns {Object}
+ */
+function logoutAdmin(
+    options = {}
+) {
+    const session =
+        getRawAdminSession();
+
+    const removed =
+        removeStorage(
+            STORAGE_KEYS.SESSION
+        );
+
+    if (
+        options.clearRemembered === true
+    ) {
+        clearRememberedAdminUsername();
+    }
+
+    if (
+        options.logActivity !== false
+    ) {
+        updateDatabase(
+            (database) => {
+                const admin =
+                    normalizeAdminData(
+                        database.admin,
+                        database.admin
+                    );
+
+                admin.lastLogoutAt =
+                    getCurrentISOTime();
+
+                admin.updatedAt =
+                    getCurrentISOTime();
+
+                database.admin =
+                    admin;
+
+                database.activityLogs.unshift({
+                    id:
+                        generateId("log"),
+
+                    type:
+                        "authentication",
+
+                    action:
+                        "logout",
+
+                    description:
+                        `Administrator "${session?.username || admin.username}" berhasil logout.`,
+
+                    metadata: {
+                        username:
+                            session?.username ||
+                            admin.username,
+
+                        reason:
+                            normalizeText(
+                                options.reason
+                            ) ||
+                            "manual"
+                    },
+
+                    createdAt:
+                        getCurrentISOTime()
+                });
+
+                return database;
+            }
+        );
+    }
+
+    return {
+        success: removed,
+        message:
+            removed
+                ? "Logout berhasil."
+                : "Session sudah tidak aktif."
+    };
+}
+
+
+/**
+ * Memastikan halaman hanya dapat dibuka admin.
+ *
+ * @param {Object} options
+ * @returns {Object}
+ */
+function requireAdminSession(
+    options = {}
+) {
+    const session =
+        getAdminSession();
+
+    if (session) {
+        if (
+            options.touch !== false
+        ) {
+            touchAdminSession({
+                extend:
+                    options.extend !==
+                    false
+            });
+        }
+
+        return {
+            authorized: true,
+            session:
+                getAdminSession(),
+            redirect:
+                false
+        };
+    }
+
+    if (
+        options.redirect !== false &&
+        typeof window !==
+            "undefined"
+    ) {
+        const loginPage =
+            normalizeText(
+                options.loginPage
+            ) ||
+            "index.html";
+
+        window.location.href =
+            loginPage;
+    }
+
+    return {
+        authorized: false,
+        session: null,
+        redirect:
+            options.redirect !==
+            false
+    };
+}
+
+
+/**
+ * Mengembalikan akun admin ke akun bawaan.
+ *
+ * @param {Object} options
+ * @returns {Object}
+ */
+function resetAdminAccount(
+    options = {}
+) {
+    const currentTime =
+        getCurrentISOTime();
+
+    const defaultAdmin =
+        normalizeAdminData(
+            {
+                username:
+                    DEFAULT_ADMIN.username,
+
+                password:
+                    DEFAULT_ADMIN.password,
+
+                displayName:
+                    DEFAULT_ADMIN.displayName,
+
+                role:
+                    DEFAULT_ADMIN.role,
+
+                enabled: true,
+
+                failedLoginAttempts:
+                    0,
+
+                lastLoginAt:
+                    null,
+
+                lastLogoutAt:
+                    null,
+
+                createdAt:
+                    currentTime
+            }
+        );
+
+    const saveResult =
+        updateDatabase(
+            (database) => {
+                database.admin =
+                    defaultAdmin;
+
+                database.activityLogs.unshift({
+                    id:
+                        generateId("log"),
+
+                    type:
+                        "admin",
+
+                    action:
+                        "admin_reset",
+
+                    description:
+                        "Akun administrator berhasil dikembalikan ke pengaturan bawaan.",
+
+                    metadata: {
+                        username:
+                            defaultAdmin.username
+                    },
+
+                    createdAt:
+                        currentTime
+                });
+
+                return database;
+            }
+        );
+
+    if (saveResult.success) {
+        logoutAdmin({
+            reason:
+                "admin_reset",
+            logActivity: false,
+            clearRemembered:
+                options.clearRemembered ===
+                true
+        });
+    }
+
+    return {
+        success:
+            saveResult.success,
+
+        message:
+            saveResult.success
+                ? "Akun admin berhasil direset."
+                : saveResult.message,
+
+        admin:
+            saveResult.success
+                ? getAdminAccount()
+                : null
+    };
+}
     /* =================================================
        INITIALIZE AUTOMATICALLY
     ================================================= */
